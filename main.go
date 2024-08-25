@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/jamesrashford/GoGraph/models"
+	"github.com/jamesrashford/graphkit/models"
 )
 
 func main() {
