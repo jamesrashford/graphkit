@@ -46,7 +46,7 @@ func (g Graph) HasEdge(from, to string) bool {
 	return ok
 }
 
-func (g Graph) AddEdge(from, to string) {
+func (g Graph) AddEdge(from, to string, params map[string]interface{}) {
 	// Check if from and to are nodes. If not, add.
 	if !g.HasNode(from) {
 		g.AddNode(from)
@@ -62,6 +62,9 @@ func (g Graph) AddEdge(from, to string) {
 		}
 
 		g.Edges[from][to] = make(map[string]interface{})
+		if params != nil {
+			g.Edges[from][to] = params
+		}
 	}
 }
 

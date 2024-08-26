@@ -8,11 +8,11 @@ import (
 
 func main() {
 	graph := models.NewEmptyGraph(true)
-	graph.AddEdge("A", "B")
-	graph.AddEdge("B", "C")
-	graph.AddEdge("C", "D")
-	graph.AddEdge("C", "E")
-	graph.AddEdge("E", "F")
+	graph.AddEdge("A", "B", nil)
+	graph.AddEdge("B", "C", nil)
+	graph.AddEdge("C", "D", nil)
+	graph.AddEdge("C", "E", nil)
+	graph.AddEdge("E", "F", nil)
 
 	fmt.Println("Nodes")
 	nodes := graph.GetNodes()
@@ -25,4 +25,7 @@ func main() {
 	for _, edge := range edges {
 		fmt.Println(edge.Source.ID, edge.Target.ID)
 	}
+
+	//path := "examples/complete/graph.edgelist"
+	//var gio io.GraphIO
 }
