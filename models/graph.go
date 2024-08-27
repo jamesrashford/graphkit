@@ -1,10 +1,11 @@
 package models
 
 type Graph struct {
-	Nodes    map[string]map[string]interface{}
-	Edges    map[string]map[string]map[string]interface{}
-	Params   map[string]interface{}
-	Directed bool
+	Nodes            map[string]map[string]interface{}
+	Edges            map[string]map[string]map[string]interface{}
+	Params           map[string]interface{}
+	NoNodes, NoEdges int
+	Directed         bool
 }
 
 func NewEmptyGraph(directed bool) *Graph {
@@ -25,6 +26,9 @@ func NewGraph(nodes map[string]map[string]interface{}, edges map[string]map[stri
 		graph.Params = make(map[string]interface{})
 	}
 
+	graph.NoNodes = 0
+	graph.NoEdges = 0
+
 	return &graph
 }
 
@@ -33,11 +37,12 @@ func (g Graph) HasNode(node string) bool {
 	return ok
 }
 
-func (g *Graph) AddNode(node string) {
+func (g Graph) AddNode(node string) {
 	if !g.HasNode(node) {
 		g.Nodes[node] = make(map[string]interface{})
 		g.Nodes[node]["ID"] = node
 		g.Nodes[node]["Label"] = node
+		g.NoNodes += 1
 	}
 }
 
@@ -65,6 +70,8 @@ func (g Graph) AddEdge(from, to string, params map[string]interface{}) {
 		if params != nil {
 			g.Edges[from][to] = params
 		}
+
+		g.NoEdges += 1
 	}
 }
 
@@ -101,4 +108,36 @@ func (g Graph) GetEdges() []Edge {
 	}
 
 	return edges
+}
+
+func (g Graph) NoOfNodes() int {
+	return g.NoNodes
+}
+
+func (g Graph) NoOfEdges() int {
+	return g.NoEdges
+}
+
+func (g Graph) Equal(other Graph) bool {
+	if g.NoOfNodes() != other.NoOfNodes() {
+		return false
+	}
+
+	if g.NoOfEdges() != other.NoOfEdges() {
+		return false
+	}
+
+	for _, node := range other.GetNodes() {
+		if !g.HasNode(node.ID) {
+			return false
+		}
+	}
+
+	for _, edge := range other.GetEdges() {
+		if !g.HasEdge(edge.Source.ID, edge.Target.ID) {
+			return false
+		}
+	}
+
+	return true
 }
