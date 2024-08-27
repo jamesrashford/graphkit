@@ -32,12 +32,12 @@ func NewGraph(nodes map[string]map[string]interface{}, edges map[string]map[stri
 	return &graph
 }
 
-func (g Graph) HasNode(node string) bool {
+func (g *Graph) HasNode(node string) bool {
 	_, ok := g.Nodes[node]
 	return ok
 }
 
-func (g Graph) AddNode(node string) {
+func (g *Graph) AddNode(node string) {
 	if !g.HasNode(node) {
 		g.Nodes[node] = make(map[string]interface{})
 		g.Nodes[node]["ID"] = node
@@ -46,12 +46,12 @@ func (g Graph) AddNode(node string) {
 	}
 }
 
-func (g Graph) HasEdge(from, to string) bool {
+func (g *Graph) HasEdge(from, to string) bool {
 	_, ok := g.Edges[from][to]
 	return ok
 }
 
-func (g Graph) AddEdge(from, to string, params map[string]interface{}) {
+func (g *Graph) AddEdge(from, to string, params map[string]interface{}) {
 	// Check if from and to are nodes. If not, add.
 	if !g.HasNode(from) {
 		g.AddNode(from)
@@ -75,7 +75,7 @@ func (g Graph) AddEdge(from, to string, params map[string]interface{}) {
 	}
 }
 
-func (g Graph) GetNodes() []Node {
+func (g *Graph) GetNodes() []Node {
 	var nodes []Node
 	for id, params := range g.Nodes {
 		node := Node{ID: id, Label: id, Params: params}
@@ -85,7 +85,7 @@ func (g Graph) GetNodes() []Node {
 	return nodes
 }
 
-func (g Graph) GetEdges() []Edge {
+func (g *Graph) GetEdges() []Edge {
 	var edges []Edge
 
 	for s, ts := range g.Edges {
@@ -110,15 +110,19 @@ func (g Graph) GetEdges() []Edge {
 	return edges
 }
 
-func (g Graph) NoOfNodes() int {
+func (g *Graph) NoOfNodes() int {
 	return g.NoNodes
 }
 
-func (g Graph) NoOfEdges() int {
+func (g *Graph) NoOfEdges() int {
 	return g.NoEdges
 }
 
-func (g Graph) Equal(other Graph) bool {
+func (g *Graph) Equal(other *Graph) bool {
+	if g.Directed != other.Directed {
+		return false
+	}
+
 	if g.NoOfNodes() != other.NoOfNodes() {
 		return false
 	}

@@ -1,8 +1,12 @@
 package io
 
-import "github.com/jamesrashford/graphkit/models"
+import (
+	"io"
+
+	"github.com/jamesrashford/graphkit/models"
+)
 
 type GraphIO interface {
-	ReadGraph(path string, directed bool) (*models.Graph, error)
-	WriteGraph(graph *models.Graph, path string) error
+	ReadGraph(reader io.Reader) (*models.Graph, error)
+	WriteGraph(graph *models.Graph, writer io.Writer) error
 }
