@@ -1,5 +1,7 @@
 package models
 
+import "sort"
+
 type Graph struct {
 	Nodes            map[string]map[string]interface{}
 	Edges            map[string]map[string]map[string]interface{}
@@ -76,8 +78,15 @@ func (g *Graph) AddEdge(from, to string, params map[string]interface{}) {
 }
 
 func (g *Graph) GetNodes() []Node {
+	keys := make([]string, 0)
+	for k, _ := range g.Nodes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	var nodes []Node
-	for id, params := range g.Nodes {
+	for _, id := range keys {
+		params := g.Nodes[id]
 		node := Node{ID: id, Label: id, Params: params}
 		nodes = append(nodes, node)
 	}
@@ -87,9 +96,22 @@ func (g *Graph) GetNodes() []Node {
 
 func (g *Graph) GetEdges() []Edge {
 	var edges []Edge
+	keys1 := make([]string, 0)
+	for k, _ := range g.Edges {
+		keys1 = append(keys1, k)
+	}
+	sort.Strings(keys1)
 
-	for s, ts := range g.Edges {
-		for t, params := range ts {
+	for _, s := range keys1 {
+		ts := g.Edges[s]
+		keys2 := make([]string, 0)
+		for k, _ := range ts {
+			keys2 = append(keys2, k)
+		}
+		sort.Strings(keys2)
+
+		for _, t := range keys2 {
+			params := g.Edges[s][t]
 			sp := g.Nodes[s]
 			tp := g.Nodes[t]
 

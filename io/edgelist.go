@@ -2,7 +2,9 @@ package io
 
 import (
 	"bufio"
+	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/jamesrashford/graphkit/models"
@@ -32,16 +34,8 @@ func NewEdgeListIO(comment, delimiter string, directed bool) *EdgeListIO {
 
 // data, if true, encode as json and store in params
 
-func (elio *EdgeListIO) ReadGraph(reader *io.Reader) (*models.Graph, error) {
+func (elio *EdgeListIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 	graph := models.NewEmptyGraph(elio.Directed)
-
-	/*
-		file, err := os.Open(path)
-		if err != nil {
-			return nil, err
-		}
-		defer file.Close()
-	*/
 
 	scanner := bufio.NewScanner(reader)
 
@@ -52,15 +46,26 @@ func (elio *EdgeListIO) ReadGraph(reader *io.Reader) (*models.Graph, error) {
 		}
 
 		row := strings.Split(line, elio.Delimiter)
+		if len(row) < 2 {
+			return nil, fmt.Errorf("need at least 2 rows, not %d", len(row))
+		}
 
 		// check for json data in idx 2. If so, load into params
 		source := row[0]
 		target := row[1]
 
-		//check if more
-		//data := row[2]
+		var params map[string]interface{}
 
-		graph.AddEdge(source, target, nil)
+		if len(row) > 2 {
+			// Treat third col as weight
+			weight := row[2]
+			if val, err := strconv.Atoi(weight); err == nil {
+				params = make(map[string]interface{})
+				params["weight"] = val
+			}
+		}
+
+		graph.AddEdge(source, target, params)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -70,8 +75,32 @@ func (elio *EdgeListIO) ReadGraph(reader *io.Reader) (*models.Graph, error) {
 	return graph, nil
 }
 
-func (elio *EdgeListIO) WriteGraph(graph *models.Graph, writer io.Writer) {
+func (elio *EdgeListIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
 	//Convert String id to numerial id
-	//nodeIDMap := make(map[string]int)
-	return
+	nodeIDMap := make(map[string]int)
+
+	// Enumerate in order
+	for i, node := range graph.GetNodes() {
+		nodeIDMap[node.ID] = i
+	}
+
+	w := bufio.NewWriter(writer)
+
+	for _, edge := range graph.GetEdges() {
+		source := nodeIDMap[edge.Source.ID]
+		target := nodeIDMap[edge.Target.ID]
+
+		line := fmt.Sprintf("%d %d", source, target)
+
+		if weight, ok := edge.Params["weight"]; ok {
+			line += fmt.Sprintf(" %d", weight)
+		}
+
+		line += "\n"
+
+		w.WriteString(line)
+		w.Flush()
+	}
+
+	return nil
 }
