@@ -46,8 +46,9 @@ func (elio *EdgeListIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 		}
 
 		row := strings.Split(line, elio.Delimiter)
-		if len(row) < 2 {
-			return nil, fmt.Errorf("need at least 2 rows, not %d", len(row))
+		no_rows := len(row)
+		if no_rows < 2 || no_rows > 3 {
+			return nil, fmt.Errorf("need 2 or 3 cols, not %d", len(row))
 		}
 
 		// check for json data in idx 2. If so, load into params
