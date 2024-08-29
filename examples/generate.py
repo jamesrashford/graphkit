@@ -1,6 +1,7 @@
 import os
 import json
 import networkx as nx
+import pandas as pd
 
 # Implement all from https://networkx.org/documentation/stable/reference/readwrite/index.html
 
@@ -28,6 +29,11 @@ def json_cytoscape(G, path):
     data = nx.cytoscape_data(G)
     out(data, path)
 
+def csv(G, path, sep=','):
+    nx.to_pandas_edgelist(G).to_csv(path, sep=sep, index=False)
+
+def tsv(G, path):
+    csv(G, path, sep='\t')
 
 
 writer = {
@@ -41,7 +47,9 @@ writer = {
     "json": json_graph,
     "adjacency.json": json_adjacency,
     "cytoscape.json": json_cytoscape,
-    "net": nx.write_pajek
+    "net": nx.write_pajek,
+    "csv": csv,
+    "tsv": tsv,
 }
 
 # TODO IMPLEMENT MORE METHODS
