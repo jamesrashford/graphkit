@@ -1,34 +1,31 @@
 package main
 
 import (
-	"bytes"
+	"encoding/csv"
 	"fmt"
-
-	"github.com/jamesrashford/graphkit/io"
+	"os"
 )
 
 func main() {
-	elio := io.NewEdgeListIO("", "", true)
-
-	buf := new(bytes.Buffer)
-	buf.WriteString("0 1 5\n0 2 6\n0 3 2\n0 4 1\n1 2 8\n1 3 3\n1 4 4\n2 3 9\n2 4 5\n3 4 1")
-
-	fmt.Println(buf.String())
-
-	graph, err := elio.ReadGraph(buf)
+	file, err := os.Open("examples/complete/graph.csv")
 	if err != nil {
 		panic(err)
 	}
 
-	for _, e := range graph.GetEdges() {
-		fmt.Println(e)
+	records, err := csv.NewReader(file).ReadAll()
+	if err != nil {
+		panic(err)
 	}
 
-	buf = new(bytes.Buffer)
+	headerMap := make(map[string]int)
 
-	elio.WriteGraph(graph, buf)
-
-	out := buf.String()
-	fmt.Println(out)
-
+	for i, record := range records {
+		if i == 0 {
+			for j, h := range record {
+				headerMap[h] = j
+			}
+			continue
+		}
+		fmt.Println(headerMap, record)
+	}
 }
