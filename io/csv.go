@@ -21,7 +21,7 @@ func NewCSVIO(comment, delimiter string, source string, target string, directed 
 		comment = "#"
 	}
 	if delimiter == "" {
-		delimiter = " "
+		delimiter = ","
 	}
 
 	if source == "" {
@@ -63,12 +63,37 @@ func (csvio *CSVIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 		var params map[string]interface{}
 
 		// Check if other cols
-		//if csvio.Data
+		if csvio.Data {
+			if len(headerMap) > 2 {
+				params = make(map[string]interface{})
 
-		graph.AddEdge(record[headerMap[csvio.SourceCol]], record[headerMap[csvio.SourceCol]], params)
+				for k, v := range headerMap {
+					if k == csvio.SourceCol || k == csvio.TargetCol {
+						continue
+					}
+
+					params[k] = record[v]
+				}
+			}
+		}
+
+		graph.AddEdge(record[headerMap[csvio.SourceCol]], record[headerMap[csvio.TargetCol]], params)
 	}
+
+	return graph, nil
 }
 
 func (csvio *CSVIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
+	header := make(map[string]bool)
+	header["source"] = true
+	header["target"] = true
+
+	edges := graph.GetEdges()
+	for _, e := edges {
+		for k, _ := range e.Params {
+			header[k] = true
+		}
+	}
+
 	return nil
 }
