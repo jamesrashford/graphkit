@@ -46,11 +46,16 @@ func main() {
 		graph.AddEdge(record[headerMap["source"]], record[headerMap["target"]], params)
 	}
 
+	header := make(map[string]bool)
+	header["source"] = true
+	header["target"] = true
+
 	edges := graph.GetEdges()
 	for _, e := range edges {
 		for k, _ := range e.Params {
-			fmt.Println(k)
+			header[k] = true
 		}
 	}
-	fmt.Println(edges)
+
+	fmt.Println(header)
 }

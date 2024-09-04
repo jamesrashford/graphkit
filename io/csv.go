@@ -84,14 +84,16 @@ func (csvio *CSVIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 }
 
 func (csvio *CSVIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
-	header := make(map[string]bool)
-	header["source"] = true
-	header["target"] = true
+	header := make(map[string]int)
+	header["source"] = 0
+	header["target"] = 1
 
 	edges := graph.GetEdges()
 	for _, e := edges {
+		i := 2
 		for k, _ := range e.Params {
-			header[k] = true
+			header[k] = i
+			i += 1
 		}
 	}
 
