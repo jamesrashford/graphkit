@@ -46,16 +46,33 @@ func main() {
 		graph.AddEdge(record[headerMap["source"]], record[headerMap["target"]], params)
 	}
 
-	header := make(map[string]bool)
-	header["source"] = true
-	header["target"] = true
-
+	headerParams := make(map[string]bool)
 	edges := graph.GetEdges()
 	for _, e := range edges {
 		for k, _ := range e.Params {
-			header[k] = true
+			headerParams[k] = true
 		}
 	}
 
+	delimiter := ","
+
+	headerIdx := make(map[int]string)
+	header := "source" + delimiter + "target"
+	i := 0
+	for k, _ := range headerParams {
+		headerIdx[i] = k
+		header += fmt.Sprintf("%s%s", delimiter, k)
+		i += 1
+	}
+
 	fmt.Println(header)
+
+	for _, e := range edges {
+		row := fmt.Sprintf("%v%s%v", e.Source.ID, delimiter, e.Target.ID)
+		for i := 0; i < len(e.Params); i++ {
+			v := e.Params[headerIdx[i]]
+			row += fmt.Sprintf("%s%v", delimiter, v)
+		}
+		fmt.Println(row)
+	}
 }
