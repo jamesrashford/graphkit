@@ -94,7 +94,7 @@ func (csvio *CSVIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
 		}
 	}
 
-	delimiter := ","
+	delimiter := csvio.Delimiter
 
 	headerIdx := make(map[int]string)
 	header := "source" + delimiter + "target"
