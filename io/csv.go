@@ -15,10 +15,9 @@ type CSVIO struct {
 	SourceCol string
 	TargetCol string
 	Directed  bool
-	Data      bool
 }
 
-func NewCSVIO(comment, delimiter string, source string, target string, directed bool, data bool) *CSVIO {
+func NewCSVIO(comment, delimiter string, source string, target string, directed bool) *CSVIO {
 	if comment == "" {
 		comment = "#"
 	}
@@ -40,7 +39,6 @@ func NewCSVIO(comment, delimiter string, source string, target string, directed 
 		SourceCol: source,
 		TargetCol: target,
 		Directed:  directed,
-		Data:      data,
 	}
 	return &csvio
 }
@@ -64,18 +62,15 @@ func (csvio *CSVIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 		}
 		var params map[string]interface{}
 
-		// Check if other cols
-		if csvio.Data {
-			if len(headerMap) > 2 {
-				params = make(map[string]interface{})
+		if len(headerMap) > 2 {
+			params = make(map[string]interface{})
 
-				for k, v := range headerMap {
-					if k == csvio.SourceCol || k == csvio.TargetCol {
-						continue
-					}
-
-					params[k] = record[v]
+			for k, v := range headerMap {
+				if k == csvio.SourceCol || k == csvio.TargetCol {
+					continue
 				}
+
+				params[k] = record[v]
 			}
 		}
 

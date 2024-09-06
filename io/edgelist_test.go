@@ -4,29 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/jamesrashford/graphkit/io"
 	"github.com/jamesrashford/graphkit/models"
 )
-
-func getExamples(ext string) ([]string, error) {
-	var paths []string
-	err := filepath.Walk("../examples",
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if strings.HasSuffix(path, ext) {
-				paths = append(paths, path)
-			}
-			return nil
-		})
-
-	return paths, err
-}
 
 func TestEdglistIORead(t *testing.T) {
 	elio := io.NewEdgeListIO("", "", true)
@@ -53,8 +36,8 @@ func TestEdglistIORead(t *testing.T) {
 	}
 }
 
-func TestEdglistIOReadExamples(t *testing.T) {
-	paths, err := getExamples(".edgelist")
+func TestEdglistIOExamples(t *testing.T) {
+	paths, err := io.GetExamples(".edgelist")
 	if err != nil {
 		t.Error(err)
 	}
