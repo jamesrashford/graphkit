@@ -2,7 +2,9 @@ package io_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/jamesrashford/graphkit/io"
@@ -61,9 +63,37 @@ func TestCSVIOExamples(t *testing.T) {
 }
 
 // Test Write
+func TestCSVIOWrite(t *testing.T) {
+	testGraph := models.NewEmptyGraph(true)
+	testGraph.AddEdge("0", "1", nil)
+	testGraph.AddEdge("0", "2", nil)
+	testGraph.AddEdge("0", "3", nil)
+	testGraph.AddEdge("1", "2", nil)
+	testGraph.AddEdge("1", "3", nil)
+	testGraph.AddEdge("2", "3", nil)
+
+	csvio := io.NewCSVIO("#", ",", "source", "target", true)
+	var readwrite io.GraphIO = csvio
+
+	buf := new(bytes.Buffer)
+
+	fmt.Println(buf.String())
+
+	err := readwrite.WriteGraph(testGraph, buf)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := "source,target\n0,1\n0,2\n0,3\n1,2\n1,3\n2,3\n"
+	ans := buf.String()
+
+	if strings.Compare(expected, ans) != 0 {
+		t.Errorf("test graph does not match write graph")
+	}
+}
 
 // Test params
 
 // Test cols
 
-// Test col names
+// Test cols with parms
