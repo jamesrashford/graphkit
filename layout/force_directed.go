@@ -66,17 +66,10 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 
 					if dist > 0 {
 						repForce := repulsiveForce(k, dist)
-
-						du := disp[u.ID]
-						disp[u.ID] = Point{
-							X: du.X + (dx/dist)*repForce,
-							Y: du.Y + (dy/dist)*repForce,
-						}
-
 						dv := disp[v.ID]
 						disp[v.ID] = Point{
-							X: dv.X - (dx/dist)*repForce,
-							Y: dv.Y - (dy/dist)*repForce,
+							X: dv.X + (dx/dist)*repForce,
+							Y: dv.Y + (dy/dist)*repForce,
 						}
 					}
 				}
