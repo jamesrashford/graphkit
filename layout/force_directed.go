@@ -46,17 +46,16 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 		}
 	}
 
+	fmt.Println(pos)
+
 	disp := make(map[string]Point)
 
 	t := t_start
 
 	for iter := 0; iter < iterations; iter++ {
-		fmt.Println(iter + 1)
 		for _, n := range nodes {
 			disp[n.ID] = Point{0.0, 0.0}
 		}
-
-		fmt.Println(pos)
 
 		for _, u := range nodes {
 			for _, v := range nodes {
@@ -120,8 +119,9 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 
 		t *= 0.95
 
-		fmt.Println(pos)
 	}
+
+	fmt.Println(pos)
 
 	return pos
 }
