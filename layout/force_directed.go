@@ -28,13 +28,19 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 	// Load posPrev, if exists, into pos
 	if posPrev == nil {
 		for _, n := range nodes {
-			pos[n.ID] = Point{rand.Float64(), rand.Float64()}
+			pos[n.ID] = Point{
+				X: rand.Float64(),
+				Y: rand.Float64(),
+			}
 		}
 	}
 
 	for _, n := range nodes {
 		if _, ok := posPrev[n.ID]; !ok {
-			pos[n.ID] = Point{rand.Float64(), rand.Float64()}
+			pos[n.ID] = Point{
+				X: rand.Float64(),
+				Y: rand.Float64(),
+			}
 		} else {
 			pos[n.ID] = posPrev[n.ID]
 		}
