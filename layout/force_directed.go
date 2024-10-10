@@ -12,11 +12,11 @@ func repulsiveForce(k, dist float64) float64 {
 	if dist == 0 {
 		return 0
 	}
-	return k * k / dist
+	return (k * k) / dist
 }
 
 func attractiveForce(k, dist float64) float64 {
-	return dist * dist / k
+	return (dist * dist) / k
 }
 
 func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int, k float64, t_start float64) map[string]Point {
