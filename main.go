@@ -26,5 +26,5 @@ func main() {
 	pos := layout.ForceDirected(G, nil, 50, k, 0.1)
 
 	plt := plot.NewGraphPlotter(800, 600)
-	plt.Draw(G, pos, false, "test_plot.png")
+	plt.Draw(G, pos, true, "test_plot.png")
 }

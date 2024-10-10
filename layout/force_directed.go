@@ -101,12 +101,14 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 		}
 
 		for _, n := range nodes {
-			dm := Distance(Point{0.0, 0.0}, disp[n.ID])
 			pos_n := pos[n.ID]
+			disp_n := disp[n.ID]
+			dm := Distance(Point{0.0, 0.0}, disp_n)
+
 			if dm > 0 {
 				pos[n.ID] = Point{
-					X: pos_n.X + (pos_n.X/dm)*math.Min(dm, t),
-					Y: pos_n.Y + (pos_n.Y/dm)*math.Min(dm, t),
+					X: pos_n.X + (disp_n.X/dm)*math.Min(dm, t),
+					Y: pos_n.Y + (disp_n.Y/dm)*math.Min(dm, t),
 				}
 			}
 
@@ -117,7 +119,6 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 	}
 
 	fmt.Println(pos)
-	fmt.Println(disp)
 
 	return pos
 }

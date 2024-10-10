@@ -23,8 +23,8 @@ func (gp *GraphPlotter) Draw(graph *models.Graph, pos map[string]layout.Point, l
 	nodes := graph.GetNodes()
 	edges := graph.GetEdges()
 
-	const scale = 100
-	const rad = 5
+	const scale = 1
+	const rad = 10
 
 	dc := gg.NewContext(gp.Width, gp.Height)
 
