@@ -23,13 +23,13 @@ func (gp *GraphPlotter) Draw(graph *models.Graph, pos map[string]layout.Point, l
 	nodes := graph.GetNodes()
 	edges := graph.GetEdges()
 
-	const scale = 1
+	const scale = 10
 	const rad = 10
 
 	dc := gg.NewContext(gp.Width, gp.Height)
 
 	// Translate to centre
-	dc.Translate(float64(gp.Width)/2.0, float64(gp.Height)/2.0)
+	dc.Translate((float64(gp.Width)/2.0)-scale, (float64(gp.Height)/2.0)-scale)
 
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
