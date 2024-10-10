@@ -1,9 +1,7 @@
 package io
 
 import (
-	"bufio"
 	"encoding/csv"
-	"fmt"
 	"io"
 
 	"github.com/jamesrashford/graphkit/models"
@@ -85,36 +83,9 @@ func (csvio *CSVIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
 	edges := graph.GetEdges()
 	for _, e := range edges {
 		for k, _ := range e.Params {
-			headerParams[k] = true
+			header[k] = i
+			i += 1
 		}
-	}
-
-	delimiter := csvio.Delimiter
-
-	headerIdx := make(map[int]string)
-	header := "source" + delimiter + "target"
-	i := 0
-	for k, _ := range headerParams {
-		headerIdx[i] = k
-		header += fmt.Sprintf("%s%s", delimiter, k)
-		i += 1
-	}
-	header += "\n"
-
-	w := bufio.NewWriter(writer)
-	w.WriteString(header)
-	w.Flush()
-
-	for _, e := range edges {
-		line := fmt.Sprintf("%v%s%v", e.Source.ID, delimiter, e.Target.ID)
-		for i := 0; i < len(e.Params); i++ {
-			v := e.Params[headerIdx[i]]
-			line += fmt.Sprintf("%s%v", delimiter, v)
-		}
-		line += "\n"
-
-		w.WriteString(line)
-		w.Flush()
 	}
 
 	return nil
