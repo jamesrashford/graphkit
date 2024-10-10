@@ -57,25 +57,27 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 			disp[n.ID] = Point{0.0, 0.0}
 		}
 
-		for _, u := range nodes {
-			for _, v := range nodes {
-				dx := pos[u.ID].X - pos[v.ID].X
-				dy := pos[u.ID].Y - pos[v.ID].Y
-				dist := Distance(pos[u.ID], pos[v.ID])
+		for i, u := range nodes {
+			for j, v := range nodes {
+				if i != j {
+					dx := pos[u.ID].X - pos[v.ID].X
+					dy := pos[u.ID].Y - pos[v.ID].Y
+					dist := Distance(pos[u.ID], pos[v.ID])
 
-				if dist > 0 {
-					repForce := repulsiveForce(k, dist)
+					if dist > 0 {
+						repForce := repulsiveForce(k, dist)
 
-					du := disp[u.ID]
-					disp[u.ID] = Point{
-						X: du.X + (dx/dist)*repForce,
-						Y: du.Y + (dy/dist)*repForce,
-					}
+						du := disp[u.ID]
+						disp[u.ID] = Point{
+							X: du.X + (dx/dist)*repForce,
+							Y: du.Y + (dy/dist)*repForce,
+						}
 
-					dv := disp[v.ID]
-					disp[v.ID] = Point{
-						X: dv.X - (dx/dist)*repForce,
-						Y: dv.Y - (dy/dist)*repForce,
+						dv := disp[v.ID]
+						disp[v.ID] = Point{
+							X: dv.X - (dx/dist)*repForce,
+							Y: dv.Y - (dy/dist)*repForce,
+						}
 					}
 				}
 			}
@@ -122,6 +124,7 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 	}
 
 	fmt.Println(pos)
+	fmt.Println(disp)
 
 	return pos
 }
