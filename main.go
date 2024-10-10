@@ -13,7 +13,7 @@ import (
 func main() {
 	elio := io.NewEdgeListIO("", "", true)
 
-	file, err := os.Open("examples/lollipop/graph.edgelist")
+	file, err := os.Open("examples/complete/graph.edgelist")
 	if err != nil {
 		panic(err)
 	}
@@ -24,10 +24,8 @@ func main() {
 	}
 
 	k := math.Sqrt(1.0 / float64(G.NoNodes))
-
-	pos := layout.ForceDirected(G, nil, 100, k, 0.1)
-
-	fmt.Println(pos)
+	fmt.Println(k)
+	pos := layout.ForceDirected(G, nil, 2, k, 0.1)
 
 	plt := plot.NewGraphPlotter(800, 600)
 	plt.Draw(G, pos, false, "test_plot.png")

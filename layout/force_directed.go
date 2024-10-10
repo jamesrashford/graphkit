@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 
@@ -44,9 +45,12 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 	t := t_start
 
 	for iter := 0; iter < iterations; iter++ {
+		fmt.Println(iter + 1)
 		for _, n := range nodes {
 			disp[n.ID] = Point{0.0, 0.0}
 		}
+
+		fmt.Println(pos)
 
 		for _, u := range nodes {
 			for _, v := range nodes {
@@ -56,13 +60,18 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 
 				if dist > 0 {
 					repForce := repulsiveForce(k, dist)
-					disp_u := disp[u.ID]
-					disp_u.X += (dx / dist) * repForce
-					disp_u.Y += (dy / dist) * repForce
 
-					disp_v := disp[v.ID]
-					disp_v.X -= (dx / dist) * repForce
-					disp_v.Y -= (dy / dist) * repForce
+					du := disp[u.ID]
+					disp[u.ID] = Point{
+						X: du.X + (dx/dist)*repForce,
+						Y: du.Y + (dy/dist)*repForce,
+					}
+
+					dv := disp[v.ID]
+					disp[v.ID] = Point{
+						X: dv.X - (dx/dist)*repForce,
+						Y: dv.Y - (dy/dist)*repForce,
+					}
 				}
 			}
 		}
@@ -77,13 +86,17 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 
 			if dist > 0 {
 				attrForce := attractiveForce(k, dist)
-				disp_s := disp[source]
-				disp_s.X = disp_s.X - (dx/dist)*attrForce
-				disp_s.Y -= (dy / dist) * attrForce
+				ds := disp[source]
+				disp[source] = Point{
+					X: ds.X - (dx/dist)*attrForce,
+					Y: ds.Y - (dy/dist)*attrForce,
+				}
 
-				disp_t := disp[target]
-				disp_t.X += (dx / dist) * attrForce
-				disp_t.Y += (dy / dist) * attrForce
+				dt := disp[target]
+				disp[target] = Point{
+					X: dt.X + (dx/dist)*attrForce,
+					Y: dt.Y + (dy/dist)*attrForce,
+				}
 			}
 		}
 
@@ -91,13 +104,17 @@ func ForceDirected(graph *models.Graph, posPrev map[string]Point, iterations int
 			dm := Distance(Point{0.0, 0.0}, disp[n.ID])
 			pos_n := pos[n.ID]
 			if dm > 0 {
-				pos_n.X += (disp[n.ID].X / dm) * math.Min(dm, t)
-				pos_n.Y += (disp[n.ID].Y / dm) * math.Min(dm, t)
+				pos[n.ID] = Point{
+					X: pos_n.X + (pos_n.X/dm)*math.Min(dm, t),
+					Y: pos_n.Y + (pos_n.Y/dm)*math.Min(dm, t),
+				}
 			}
 
 		}
 
 		t *= 0.95
+
+		fmt.Println(pos)
 	}
 
 	return pos
