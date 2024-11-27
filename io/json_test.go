@@ -3,26 +3,26 @@ package io_test
 import (
 	"bytes"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/jamesrashford/graphkit/io"
 	"github.com/jamesrashford/graphkit/models"
 )
 
-func TestCSVIORead(t *testing.T) {
-	csvio := io.NewCSVIO("#", ",", "source", "target", true)
-	var readwrite io.GraphIO = csvio
+// Read
+func TestJSONIORead(t *testing.T) {
+	jsonio := io.NewJSONIO()
+	var readwrite io.GraphIO = jsonio
 
 	buf := new(bytes.Buffer)
-	buf.WriteString("source,target\n0,1\n0,2\n0,3\n1,2\n1,3\n2,3")
+	buf.WriteString(`{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "0"}, {"id": "1"}, {"id": "2"}, {"id": "3"}], "links": [{"source": "0", "target": "1"},{"source": "0", "target": "2"},{"source": "0", "target": "3"},{"source": "1", "target": "2"},{"source": "1", "target": "3"},{"source": "2", "target": "3"}]}`)
 
 	graph, err := readwrite.ReadGraph(buf)
 	if err != nil {
 		t.Error(err)
 	}
 
-	testGraph := models.NewEmptyGraph(true)
+	testGraph := models.NewEmptyGraph(false)
 	testGraph.AddEdge("0", "1", nil)
 	testGraph.AddEdge("0", "2", nil)
 	testGraph.AddEdge("0", "3", nil)
@@ -35,15 +35,15 @@ func TestCSVIORead(t *testing.T) {
 	}
 }
 
-// Test Read Examples
-func TestCSVIOExamples(t *testing.T) {
-	paths, err := io.GetExamples(".csv")
+// Read Examples
+func TestJSONIOExamples(t *testing.T) {
+	paths, err := io.GetExamples("graph.json")
 	if err != nil {
 		t.Error(err)
 	}
 
-	csvio := io.NewCSVIO("#", ",", "source", "target", true)
-	var readwrite io.GraphIO = csvio
+	jsonio := io.NewJSONIO()
+	var readwrite io.GraphIO = jsonio
 
 	for _, path := range paths {
 		t.Run(path, func(t *testing.T) {
@@ -61,8 +61,8 @@ func TestCSVIOExamples(t *testing.T) {
 	}
 }
 
-// Test Write
-func TestCSVIOWrite(t *testing.T) {
+// Write
+func TestJSONIOWrite(t *testing.T) {
 	testGraph := models.NewEmptyGraph(true)
 	testGraph.AddEdge("0", "1", nil)
 	testGraph.AddEdge("0", "2", nil)
@@ -71,8 +71,8 @@ func TestCSVIOWrite(t *testing.T) {
 	testGraph.AddEdge("1", "3", nil)
 	testGraph.AddEdge("2", "3", nil)
 
-	csvio := io.NewCSVIO("#", ",", "source", "target", true)
-	var readwrite io.GraphIO = csvio
+	jsonio := io.NewJSONIO()
+	var readwrite io.GraphIO = jsonio
 
 	buf := new(bytes.Buffer)
 
@@ -81,16 +81,12 @@ func TestCSVIOWrite(t *testing.T) {
 		t.Error(err)
 	}
 
-	expected := "source,target\n0,1\n0,2\n0,3\n1,2\n1,3\n2,3\n"
-	ans := buf.String()
+	resultGraph, err := readwrite.ReadGraph(buf)
+	if err != nil {
+		t.Error(err)
+	}
 
-	if strings.Compare(expected, ans) != 0 {
-		t.Errorf("test graph does not match write graph")
+	if !resultGraph.Equal(testGraph) {
+		t.Errorf("test graph does not match read graph")
 	}
 }
-
-// Test params
-
-// Test cols
-
-// Test cols with parms

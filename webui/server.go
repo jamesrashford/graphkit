@@ -2,6 +2,8 @@ package webui
 
 import (
 	"embed"
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -19,6 +21,7 @@ func StartServer(addr string) {
 	http.Handle("/static/", http.StripPrefix("/", static))
 
 	http.HandleFunc("/", index)
+	http.HandleFunc("/graph.json", graphEndpoint)
 
 	// Step 3: Start the HTTP server
 	log.Println("Serving on", addr)
@@ -41,4 +44,16 @@ func index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 		log.Println("Template rendering error:", err)
 	}
+}
+
+func graphEndpoint(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title string `json:"title"`
+	}{
+		Title: "Graphkit WebUI",
+	}
+
+	fmt.Println(data)
+
+	json.NewEncoder(w).Encode(data)
 }
