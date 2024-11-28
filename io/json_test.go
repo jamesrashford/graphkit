@@ -90,3 +90,5 @@ func TestJSONIOWrite(t *testing.T) {
 		t.Errorf("test graph does not match read graph")
 	}
 }
+
+// TODO: TEST with attributes

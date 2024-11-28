@@ -16,29 +16,23 @@ func NewJSONIO() *JSONIO {
 }
 
 func (jsonio *JSONIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
-	/*
-		b, err := io.ReadAll(reader)
-		if err != nil {
-			return nil, err
-		}*/
-
 	decoder := json.NewDecoder(reader)
 
-	var jsonGraph models.JSONGraph
-	err := decoder.Decode(&jsonGraph) // force int to string
+	var jg models.JSONGraph
+	err := decoder.Decode(&jg)
 	if err != nil {
 		return nil, err
 	}
 
-	graph := models.NewEmptyGraph(jsonGraph.Directed)
+	graph := models.NewEmptyGraph(jg.Directed)
 
-	for _, n := range jsonGraph.Nodes {
+	for _, n := range jg.Nodes {
 		// TODO: Include attrs
 		id := fmt.Sprintf("%v", n.ID)
 		graph.AddNode(id)
 	}
 
-	for _, e := range jsonGraph.Links {
+	for _, e := range jg.Links {
 		// TODO: Include attrs
 		s := fmt.Sprintf("%v", e.Source)
 		t := fmt.Sprintf("%v", e.Target)
@@ -49,7 +43,7 @@ func (jsonio *JSONIO) ReadGraph(reader io.Reader) (*models.Graph, error) {
 }
 
 func (jsonio *JSONIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
-	// Load our graph into JSONGraph struct
+	// Load our graph into jg struct
 	jg := models.JSONGraph{}
 	jg.Directed = graph.Directed
 	jg.Multigraph = false
@@ -74,7 +68,7 @@ func (jsonio *JSONIO) WriteGraph(graph *models.Graph, writer io.Writer) error {
 		jg.Links = append(jg.Links, edge)
 	}
 
-	// Write JSONGraph to buffer
+	// Write jg to buffer
 	data, err := json.MarshalIndent(jg, "", " ")
 	if err != nil {
 		return err
