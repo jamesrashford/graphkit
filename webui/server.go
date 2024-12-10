@@ -1,12 +1,18 @@
 package webui
 
 import (
+	"bytes"
 	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
+	"os"
+
+	"github.com/jamesrashford/graphkit/io"
+	"github.com/jamesrashford/graphkit/models"
 )
 
 //go:embed static/*
@@ -47,13 +53,42 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func graphEndpoint(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		Title string `json:"title"`
-	}{
-		Title: "Graphkit WebUI",
+	gio1 := io.NewEdgeListIO("", "", true)
+	var rw1 io.GraphIO = gio1
+
+	file, err := os.Open("examples/complete/graph.edgelist")
+	if err != nil {
+		fmt.Println(err)
+		json.NewEncoder(w).Encode(err)
+		return
 	}
 
-	fmt.Println(data)
+	graph, err := rw1.ReadGraph(file)
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
+	// Apply layout here
+	// Append x, y values by pointer
+	for _, node := range graph.GetNodes() {
+		graph.Nodes[node.ID]["x"] = rand.Float64() * 3
+		graph.Nodes[node.ID]["y"] = rand.Float64() * 3
+	}
+
+	gio2 := io.NewGraphologyIO()
+	var rw2 io.GraphIO = gio2
+
+	buf := new(bytes.Buffer)
+
+	err = rw2.WriteGraph(graph, buf)
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+
+	data := models.GraphologyGraph{}
+	json.Unmarshal(buf.Bytes(), &data)
 
 	json.NewEncoder(w).Encode(data)
 }

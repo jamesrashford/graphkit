@@ -1,9 +1,7 @@
 
 
 
-$.getJSON("/static/graph.json", function(data) {
-    console.log(data);
-
+$.getJSON("/graph.json", function(data) {
     const graph = new graphology.Graph();
     graph.import(data);
     /*
