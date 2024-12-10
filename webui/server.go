@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 
@@ -56,7 +55,7 @@ func graphEndpoint(w http.ResponseWriter, r *http.Request) {
 	gio1 := io.NewEdgeListIO("", "", true)
 	var rw1 io.GraphIO = gio1
 
-	file, err := os.Open("examples/complete/graph.edgelist")
+	file, err := os.Open("examples/lollipop/graph.edgelist")
 	if err != nil {
 		fmt.Println(err)
 		json.NewEncoder(w).Encode(err)
@@ -69,14 +68,7 @@ func graphEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Apply layout here
-	// Append x, y values by pointer
-	for _, node := range graph.GetNodes() {
-		graph.Nodes[node.ID]["x"] = rand.Float64() * 3
-		graph.Nodes[node.ID]["y"] = rand.Float64() * 3
-	}
-
-	gio2 := io.NewGraphologyIO()
+	gio2 := io.NewJSONIO()
 	var rw2 io.GraphIO = gio2
 
 	buf := new(bytes.Buffer)
@@ -87,7 +79,7 @@ func graphEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := models.GraphologyGraph{}
+	data := models.JSONGraph{}
 	json.Unmarshal(buf.Bytes(), &data)
 
 	json.NewEncoder(w).Encode(data)
