@@ -8,7 +8,6 @@ import (
 	"github.com/jamesrashford/graphkit/models"
 )
 
-// TODO
 func TestGraphologyIORead(t *testing.T) {
 	gio := io.NewGraphologyIO()
 	var readwrite io.GraphIO = gio
