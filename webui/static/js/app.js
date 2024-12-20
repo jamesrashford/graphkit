@@ -11,7 +11,7 @@ window.addEventListener("resize", () => {
 const zoomLayer = svg.append("g");
 
 svg.call(d3.zoom()
-    .scaleExtent([0.5, 5])
+    .scaleExtent([0.1, 5])
     .on("zoom", (event) => {
         zoomLayer.attr("transform", event.transform);
     }));
@@ -25,8 +25,31 @@ d3.json(endpoint).then(data => {
         degreeMap[link.source] = (degreeMap[link.source] || 0) + 1;
         degreeMap[link.target] = (degreeMap[link.target] || 0) + 1;
     });
+
+    var minDeg = Number.MAX_VALUE;
+    var maxDeg = 0;
+
     nodes.forEach(node => {
-        node.degree = degreeMap[node.id] || 0;
+        let deg = degreeMap[node.id] || 0;
+        node.degree = deg;
+        minDeg = Math.min(minDeg, deg);
+        maxDeg = Math.max(maxDeg, deg);
+    });
+
+    console.log("minDeg: " + minDeg);
+    console.log("maxDeg: " + maxDeg);
+
+    // Change these using the web ui
+    var minRad = 0.5;
+    var maxRad = 10;
+
+    function calculateRad(value, minDeg, maxDeg, minRad, maxRad) {
+        return (value - minDeg) * (maxRad - minRad) / (maxDeg - minDeg) + maxRad;
+    }
+
+    nodes.forEach(node => {
+        //node.radius = 5 + node.degree;
+        node.radius = calculateRad(node.degree, minDeg, maxDeg, minRad, maxRad);
     });
 
     if (directed) {
@@ -63,7 +86,7 @@ d3.json(endpoint).then(data => {
         .selectAll("circle")
         .data(nodes)
         .enter().append("circle")
-        .attr("r", d => 5 + d.degree)
+        .attr("r", d => d.radius)
         .attr("fill", "#69b3a2")
         .on("mouseover", (event, d) => showTooltip(event, d))
         .on("mousemove", (event) => moveTooltip(event))
@@ -87,7 +110,7 @@ d3.json(endpoint).then(data => {
         const dx = d.target.x - d.source.x;
         const dy = d.target.y - d.source.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const radius = 5 + d.target.degree;
+        const radius = d.target.radius;
         return d.target.x - (dx / distance) * radius;
     }
 
@@ -95,7 +118,7 @@ d3.json(endpoint).then(data => {
         const dx = d.target.x - d.source.x;
         const dy = d.target.y - d.source.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const radius = 5 + d.target.degree;
+        const radius = d.target.radius;
         return d.target.y - (dy / distance) * radius;
     }
 
