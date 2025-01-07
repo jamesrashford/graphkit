@@ -25,7 +25,7 @@ Currently, you can install Graphkit in one of two ways:
 1. With `go install`:
 
 ```bash
-go install github.com/jamesrashford/graphkit
+go install github.com/jamesrashford/graphkit@latest
 ```
 
 2. Using git:
