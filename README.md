@@ -14,6 +14,8 @@ Graphkit is the [pandoc](https://pandoc.org/) of graphs. It can be used to conve
 ### Web-Based Visualisation
 Thanks to D3.js, Graphkit can be used to produce interactive graphs within the browser. For now, there is no UI. You can inspect graphs with pan-zoom functionality.
 
+[![asciicast](https://asciinema.org/a/CRdenbRepAHvJsuRm3ftNPcd7.svg)](https://asciinema.org/a/CRdenbRepAHvJsuRm3ftNPcd7)
+
 ![Demo screenshot](screenshot.png)
 
 ## Installation Instructions
