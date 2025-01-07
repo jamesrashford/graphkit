@@ -33,7 +33,7 @@ go install github.com/jamesrashford/graphkit@latest
 ```bash
 git clone https://github.com/jamesrashford/graphkit
 cd graphkit
-go build .
+go install
 ```
 
 Just make sure you have `$GOPATH` added to your main `$PATH` variable.
