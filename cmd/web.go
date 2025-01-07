@@ -101,6 +101,6 @@ func init() {
 	webCmd.Flags().BoolP("directed", "d", false, "directed graph")
 
 	webCmd.MarkFlagRequired("input")
-	webCmd.MarkFlagRequired("type")
+	webCmd.MarkFlagRequired("format")
 
 }
