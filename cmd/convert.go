@@ -5,10 +5,11 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
-	"github.com/jamesrashford/graphkit/io"
+	gio "github.com/jamesrashford/graphkit/io"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +18,6 @@ var convertCmd = &cobra.Command{
 	Use:   "convert",
 	Short: "Used to convert different graph type files",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("convert called")
-
 		input, _ := cmd.Flags().GetString("input")
 		output, _ := cmd.Flags().GetString("output")
 		inFormat, _ := cmd.Flags().GetString("if")
@@ -26,37 +25,37 @@ var convertCmd = &cobra.Command{
 		directed, _ := cmd.Flags().GetBool("directed")
 		comm, _ := cmd.Flags().GetString("comments")
 
-		var read io.GraphIO
+		var read gio.GraphIO
 		switch inFormat {
 		case TypeName[EdgeListType]:
-			read = io.NewEdgeListIO(comm, "", directed)
+			read = gio.NewEdgeListIO(comm, "", directed)
 		case TypeName[CSVType]:
 			source, _ := cmd.Flags().GetString("source")
 			target, _ := cmd.Flags().GetString("target")
 			delim, _ := cmd.Flags().GetString("delimiter")
-			read = io.NewCSVIO(comm, delim, source, target, directed)
+			read = gio.NewCSVIO(comm, delim, source, target, directed)
 		case TypeName[GraphologyJSONType]:
-			read = io.NewGraphologyIO()
+			read = gio.NewGraphologyIO()
 		case TypeName[NodeLinkJSONType]:
-			read = io.NewJSONIO()
+			read = gio.NewJSONIO()
 		default:
 			log.Fatalf("\"%s\" not valid (or supported) file type!\n", inFormat)
 			os.Exit(0)
 		}
 
-		var write io.GraphIO
+		var write gio.GraphIO
 		switch outFormat {
 		case TypeName[EdgeListType]:
-			write = io.NewEdgeListIO(comm, "", directed)
+			write = gio.NewEdgeListIO(comm, "", directed)
 		case TypeName[CSVType]:
 			source, _ := cmd.Flags().GetString("source")
 			target, _ := cmd.Flags().GetString("target")
 			delim, _ := cmd.Flags().GetString("delimiter")
-			write = io.NewCSVIO(comm, delim, source, target, directed)
+			write = gio.NewCSVIO(comm, delim, source, target, directed)
 		case TypeName[GraphologyJSONType]:
-			write = io.NewGraphologyIO()
+			write = gio.NewGraphologyIO()
 		case TypeName[NodeLinkJSONType]:
-			write = io.NewJSONIO()
+			write = gio.NewJSONIO()
 		default:
 			log.Fatalf("\"%s\" not valid (or supported) file type!\n", outFormat)
 			os.Exit(0)
@@ -64,10 +63,22 @@ var convertCmd = &cobra.Command{
 
 		log.Printf("Reading graph '%s' of format '%s'...\n", input, inFormat)
 
-		inFile, err := os.Open(input)
-		if err != nil {
-			log.Fatal(err)
-			os.Exit(0)
+		var inFile io.Reader
+
+		if gio.IsURL(input) {
+			fi, err := gio.ReadUrl(input)
+			inFile = fi
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(0)
+			}
+		} else {
+			fi, err := os.Open(input)
+			inFile = fi
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(0)
+			}
 		}
 
 		log.Println("Processing graph...")

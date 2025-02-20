@@ -5,10 +5,11 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
-	"github.com/jamesrashford/graphkit/io"
+	gio "github.com/jamesrashford/graphkit/io"
 	"github.com/jamesrashford/graphkit/webui"
 	"github.com/spf13/cobra"
 )
@@ -29,19 +30,19 @@ var webCmd = &cobra.Command{
 		directed, _ := cmd.Flags().GetBool("directed")
 		comm, _ := cmd.Flags().GetString("comments")
 
-		var rw io.GraphIO
+		var rw gio.GraphIO
 		switch fileFormat {
 		case TypeName[EdgeListType]:
-			rw = io.NewEdgeListIO(comm, "", directed)
+			rw = gio.NewEdgeListIO(comm, "", directed)
 		case TypeName[CSVType]:
 			source, _ := cmd.Flags().GetString("source")
 			target, _ := cmd.Flags().GetString("target")
 			delim, _ := cmd.Flags().GetString("delimiter")
-			rw = io.NewCSVIO(comm, delim, source, target, directed)
+			rw = gio.NewCSVIO(comm, delim, source, target, directed)
 		case TypeName[GraphologyJSONType]:
-			rw = io.NewGraphologyIO()
+			rw = gio.NewGraphologyIO()
 		case TypeName[NodeLinkJSONType]:
-			rw = io.NewJSONIO()
+			rw = gio.NewJSONIO()
 		default:
 			log.Fatalf("\"%s\" not valid (or supported) file type!\n", fileFormat)
 			os.Exit(0)
@@ -49,10 +50,22 @@ var webCmd = &cobra.Command{
 
 		log.Printf("Reading graph '%s' of format '%s'...\n", filename, fileFormat)
 
-		file, err := os.Open(filename)
-		if err != nil {
-			log.Fatal(err)
-			os.Exit(0)
+		var file io.Reader
+
+		if gio.IsURL(filename) {
+			fi, err := gio.ReadUrl(filename)
+			file = fi
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(0)
+			}
+		} else {
+			fi, err := os.Open(filename)
+			file = fi
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(0)
+			}
 		}
 
 		log.Println("Processing graph...")
