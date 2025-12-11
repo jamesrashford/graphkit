@@ -1,8 +1,8 @@
-# Graphkit (ALPHA)
+# Graphkit (Beta)
 
 Graphkit - the Swiss Army knife of all things graph-related. Graphkit is a simple CLI tool written in Go for processing and analysing graph-based data structures. 
 
-Graphkit is currently in alpha and is still very much under development. If you're interested in using it, feel free, but just expect a few bugs. Feel free to make a pull request to make any corrections and report any issues/suggestions using the issues tracker.
+Graphkit is currently in beta and is still very much under development. If you're interested in using it, feel free, but just expect a few bugs. Feel free to make a pull request to make any corrections and report any issues/suggestions using the issues tracker.
 
 ## Features
 Currently, Graphkit has two main features: converting and visualising graphs.
